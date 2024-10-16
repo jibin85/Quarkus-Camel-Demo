@@ -1,0 +1,19 @@
+<insurance>
+	<customerDetails>
+		<customer>
+			<customerName>Triveni Puli</customerName>
+			<customerId>A819558</customerId>
+			<customerDOB>12-09-1998</customerDOB>
+		</customer>
+		<premium>
+			<policyNumber>732685</policyNumber>
+			<premiumAmount>5000.00</premiumAmount>
+			<premiumScheme>mediclaim</premiumScheme>
+			<validPeriod>2</validPeriod>
+			<validDate>08-09-2026</validDate>
+		</premium>
+		<claim>
+			<maxClaimAmt>300000.00</maxClaimAmt>
+		</claim>
+	</customerDetails>
+</insurance>

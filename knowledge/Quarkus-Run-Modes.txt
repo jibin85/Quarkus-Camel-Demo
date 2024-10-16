@@ -1,0 +1,86 @@
+Modes to run Quarkus Application:
+
+There are two modes to run Quarkus applications.
+1. DEV MODE
+2. JAR MODE OR PRODUCTION MODE
+
+DEV MODE:
+	Its suitable to run in dev mode to get LIVE RELOAD  or  HOT RELOAD
+	
+	CMD:
+		./mvnw quarkus:dev
+	
+JAR MODE:
+	Its suitable to run in jar mode upon successfull testing and its Ready to be deployed in PRODUCTION Environment, here no LIVERELOAD  or  HOTRELOAD are happened.
+	
+It can be acheived by
+1. Packaging the Project
+
+	CMD:
+			./mvnw clean package
+		
+2. Runing it as a jar
+
+	CMD:
+			java -jar target/quarkus-app/quarkus-run.jar
+			
+			
+DEV MODE VS JAR MODE:
+
+Live reload in Quarkus is designed specifically to work in development mode (`quarkus:dev`) and is not available when running the application in JAR mode. Here's why and what you can do about it:
+
+ Understanding the Modes in Quarkus
+1. Development Mode (`quarkus:dev`):
+   - This mode is intended for development, where live reload (or hot reload) allows Quarkus to automatically detect and apply code changes while the application is running.
+   - The command for running in dev mode is:
+     
+     ./mvnw quarkus:dev
+     
+   - Quarkus keeps track of changes in the source code and automatically restarts the relevant parts of the application, which makes it highly efficient for development and debugging.
+
+2. JAR Mode (Production Mode):
+   - When running the application using a JAR file (`java -jar target/quarkus-app/quarkus-run.jar`), you are in production mode.
+   - Production mode optimizes for performance, and live reload functionality is disabled to ensure that the application runs with the highest stability and efficiency.
+   - Live reload is not supported in this mode because it adds an overhead that is unsuitable for production environments.
+
+ How to Enable Code Updates in JAR Mode
+If you want to apply code changes when running in JAR mode, you have to stop the application, rebuild it, and restart it. Here's how you can do that:
+
+1. Stop the Running JAR:
+   - Terminate the running process.
+
+2. Rebuild the Application:
+   - Run:
+     
+     ./mvnw clean package
+     
+   - This command will recompile your code and package it as a new JAR.
+
+3. Run the Updated JAR:
+   - Start the application again using:
+     
+     java -jar target/quarkus-app/quarkus-run.jar
+     
+
+ Possible Solutions for Faster Development
+If you require live reload-like behavior even for manual testing but not in a production environment, consider:
+
+1. Use Development Mode for Testing:
+   - Use `quarkus:dev` mode for any kind of iterative development and testing. It is specifically built to provide you with the hot-reload functionality to save time during development.
+
+2. Docker Compose (if using Docker):
+   - If you’re containerizing your Quarkus application, you can use Docker Compose along with bind mounts (volumes) to allow rapid rebuild and redeploy while maintaining configuration changes.
+
+3. Continuous Testing:
+   - Quarkus also has continuous testing support, which reruns tests every time you make a code change. This can be enabled in development mode using:
+     
+     ./mvnw quarkus:dev
+     
+     Press `r` to rerun the tests when continuous testing is enabled.
+
+ Summary
+- Live reload only works in development mode (`quarkus:dev`), as it is intended to make iterative development easier.
+- In JAR mode, the application is in production mode, where live reload is not supported for stability and performance reasons.
+- For a similar experience, use dev mode for testing and development, and consider containerized environments with rapid redeployments for faster iteration.
+
+To summarize, live reload isn't available in JAR mode due to the performance optimizations required for production, but using `quarkus:dev` during development gives you the live reload benefits.

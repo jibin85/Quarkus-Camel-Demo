@@ -1,0 +1,61 @@
+When working with Quarkus in a Maven project, the suggested Maven command depends on what stage you are in and what you are trying to achieve. Here is a summary of different commands and when to use them:
+
+ 1. Development Phase
+- Run in Dev Mode:
+  - Command: `mvn quarkus:dev`
+  - Purpose: 
+		Run the application in development mode. This enables live reload, meaning that changes to the code are automatically applied without restarting 	the application. This is ideal for development as it provides a fast feedback loop.
+  - Use Case: When making changes to your application, especially during initial development or debugging.
+
+ 2. Build and Test Phase
+- Compile the Project:
+  - Command: `mvn clean compile`
+  - Purpose: Compiles the code to check for errors without creating a deployable package.
+  - Use Case: Use this for early testing or when you want to verify the code compiles correctly.
+
+- Run Unit Tests:
+  - Command: `mvn clean test`
+  - Purpose: Compiles the code and runs unit tests.
+  - Use Case: To verify that all unit tests are working correctly during development.
+
+- Run the Application in Test Mode:
+  - Command: `mvn quarkus:test`
+  - Purpose: Runs the Quarkus application with test endpoints available, useful for testing specific behaviors.
+  - Use Case: This is especially useful when you want to test specific conditions in your application without needing to build and deploy a package.
+
+ 3. Packaging the Application
+- Package the Application (JVM Mode):
+  - Command: `mvn clean package`
+  - Purpose: Packages the application into a JAR or fast-jar that can be deployed on any Java environment.
+  - Use Case: When you want to deploy the application on a JVM in production.
+
+- Create a Native Image:
+  - Command: `mvn clean package -Pnative`
+  - Purpose: Uses GraalVM to compile the application into a native executable. This native executable starts faster and consumes less memory.
+  - Use Case: This is recommended when you want to deploy the application in serverless or cloud-native environments for maximum performance and minimal resource usage.
+
+ 4. Install Artifacts Locally
+- Install to Local Repository:
+  - Command: `mvn clean install`
+  - Purpose: Installs the built package into your local Maven repository, making it available for other local projects as a dependency.
+  - Use Case: This is useful for multi-module projects where other modules depend on your package or when other projects need to use this artifact.
+
+ Recommended Commands Based on Use Case
+- For Development: Use `mvn quarkus:dev` to get the benefits of live reload.
+- For Running Tests: Use `mvn clean test` for unit testing and `mvn quarkus:test` for Quarkus-specific testing.
+- For Packaging:
+  - Use `mvn clean package` for JVM mode to create a regular JAR for deployment.
+  - Use `mvn clean package -Pnative` to create a native executable for cloud-native or container environments.
+- For Reusable Artifacts: Use `mvn clean install` to make the project available for reuse in other modules.
+
+ Summary
+- Development Mode (`mvn quarkus:dev`) is ideal during the initial stages to take advantage of live reload.
+- Package (`mvn clean package`) for a standard JAR and use Native Mode (`mvn clean package -Pnative`) for fast-startup, low-memory deployments.
+- Install (`mvn clean install`) is used if you want to reuse the project's output across multiple Maven projects.
+
+Use mvn clean compile to compile the project.
+Use mvn clean package to build a JAR.
+Use mvn quarkus:dev for development mode with live reload.
+Use mvn clean package -Pnative to create a native executable.
+
+Using the appropriate Maven command based on the specific development phase or deployment target ensures you leverage Quarkus effectively for both rapid development and efficient deployment.
