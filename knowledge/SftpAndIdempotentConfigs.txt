@@ -1,0 +1,242 @@
+SFTP Configurations and IDEMPOTENT REPOSITORY
+
+SFTP Configurations:
+
+1. application.properties:
+
+##########################
+# IMSS SFTP Configuration
+##########################
+
+imss.root = home/14499
+imss.server.ip = 10.10.10.21
+imss.server.port = 22
+imss.server.url = {{imss.server.ip}}:{{imss.server.port}}
+imss.username = root
+imss.password = Kpmg@123$%
+imss.ftp = {{imss.username}}@{{imss.server.url}}/{{imss.root}}
+imss.ftp.options = password={{imss.password}}\
+                   &disconnect=true\
+                   &delete=false\
+                   &recursive=false\
+                   &noop=true\
+                   &idempotent=true\
+                   &delay=60000\
+                   &initialDelay=1000\
+                   &useFixedDelay=true\
+                   &maxMessagesPerPoll=10
+
+#Download files from here to local
+sftp.toLocal.directory = sftp://{{imss.ftp}}/downloadable?{{imss.ftp.options}}
+
+#Upload files from local to here
+local.tosftp.directory = sftp://{{imss.ftp}}/received?{{imss.ftp.options}}
+
+#Sftp directory to get files
+sftp.put = sftp://{{imss.ftp}}/sftp1?{{imss.ftp.options}}
+
+#Sftp directory to put files
+sftp.get = sftp://{{imss.ftp}}/sftp2?{{imss.ftp.options}}
+
+# Local directory to store Upload and  downloaded files
+local.file.options = ?delete=false\
+                     &recursive=true\
+                     &noop=true\
+                     &delay=30s
+local.downloads = file:///D:/HandsOn/quarkus-camel-demo/src/test/LocalFileUtility/SFTPDownloads/
+local.uploadable = file:///D:/HandsOn/quarkus-camel-demo/src/test/LocalFileUtility/SFTPUploadable/{{local.file.options}}
+
+
+These options are typically used with Apache Camel's SFTP component to configure the behavior of the SFTP connection and file processing. Let's break down each option:
+
+1. password={{imss.password}}:
+   - This sets the password for SFTP authentication.
+   - The {{imss.password}} syntax suggests it's using a property placeholder, likely defined elsewhere in your configuration.
+
+2. disconnect=true:
+   - This tells Camel to disconnect from the SFTP server after each polling operation.
+   - It's useful for conserving server resources, especially if polling intervals are long.
+
+3. delete=false:
+   - When set to false, it prevents Camel from deleting the file from the SFTP server after processing.
+   - Files will remain on the server after they've been consumed.
+
+4. recursive=false:
+   - This option, when false, tells Camel not to search for files in subdirectories.
+   - It will only look for files in the specified directory.
+
+5. noop=true:
+   - "No Operation" mode. When true, Camel will not move or delete the file after processing.
+   - This is useful for reading files without affecting them on the server.
+
+6. idempotent=true:
+   - Enables the idempotent consumer pattern.
+   - This ensures that each file is only processed once, even if it's seen multiple times.
+
+7. delay=60000:
+   - Sets the delay between polls in milliseconds.
+   - In this case, it's set to 60,000 ms (1 minute) between each poll.
+
+8. initialDelay=1000:
+   - Sets an initial delay before the first poll starts, in milliseconds.
+   - Here, it waits for 1 second before the first poll.
+
+9. useFixedDelay=true:
+   - When true, the delay between polls is always the same (fixed).
+   - If false, it would be a fixed rate, meaning it tries to start each poll 60 seconds after the start of the previous one, regardless of how long processing took.
+
+10. maxMessagesPerPoll=10:
+    - Limits the number of messages (files) that can be fetched in a single polling operation.
+    - In this case, it will process a maximum of 10 files per poll.
+
+These options together configure an SFTP consumer that:
+- Connects securely with a password
+- Polls every minute (with a 1-second initial delay)
+- Processes up to 10 files per poll
+- Doesn't delete or move files on the server
+- Ensures each file is only processed once
+- Disconnects after each polling operation
+
+This configuration is suitable for scenarios where you want to regularly check for new files, process them without removing them from the server, and ensure that even if a file is seen multiple times, it's only processed once.
+
+
+Difference between delete=false and noop=true:
+
+The delete=false and noop=true options might seem similar at first glance, but they serve different purposes in the context of file processing with Camel's file components (including SFTP). Let me explain the differences:
+
+1. delete=false:
+   - This option specifically controls whether the file should be deleted from the source after it has been processed.
+   - When set to false, it ensures that the file is not deleted from the SFTP server after Camel has consumed it.
+   - However, if other file operations are configured (like moving the file), those operations may still occur.
+
+2. noop=true:
+   - "Noop" stands for "No Operation".
+   - This option is more comprehensive. When set to true, it tells Camel not to perform any operations on the file after processing.
+   - It prevents any change to the file on the SFTP server, including deletion, moving, or renaming.
+
+Key differences:
+
+1. Scope of action:
+   - delete=false only prevents deletion.
+   - noop=true prevents all post-processing file operations.
+
+2. Other file operations:
+   - With delete=false, other configured operations like moving or renaming the file might still occur.
+   - With noop=true, no file operations will occur; the file remains untouched.
+
+3. Use cases:
+   - delete=false is useful when you want to keep the original file but might still want to perform other operations on it.
+   - noop=true is useful when you want to leave the file completely untouched, often used for reading or monitoring files without affecting them.
+
+4. Precedence:
+   - If both options are specified, noop=true takes precedence. It will override delete=false and any other file operations.
+
+In your configuration:
+
+
+delete=false
+noop=true
+
+
+Having both options might seem redundant, but it's not uncommon. Here's why:
+
+1. Belt and suspenders approach: It ensures files won't be deleted even if noop is accidentally set to false elsewhere.
+2. Clarity of intent: It explicitly states that deletion is not desired, in addition to no operations being performed.
+3. Configuration flexibility: It allows for easily changing the behavior by modifying just one option without needing to adjust the other.
+
+In practice, with this configuration, the files on the SFTP server will remain completely untouched after Camel processes them. Camel will read the files, process their content as needed, but won't modify, move, or delete them on the server.
+
+
+
+IDEMPOTENT REPOSITORY:
+
+STEPS:
+1. Create a camel route as usual
+2. Create a seperate class or bean which handles the idempotent repository
+3. Mark the bean class with @ApplicationScoped and the bean Method with @Produces
+4. Inside bean method give ensure the following
+	IdempotentRepository idempotentRepository = FileIdempotentRepository.fileIdempotentRepository(
+                new File(repoPath),
+                250,
+                86400000
+        ); --------------------- This is for local in-memory idempotentRepository
+		
+5. In route Inject the bean using @Inject
+6. Use .idempotentConsumer(simple("FILE_NAME : ${file:name} ------- FILE_SIZE : ${file:size} bytes ------- LAST_MODIFIED : ${file:modified}"), 			  		tempFileIdempotentRepositoryBean.fileIdempotentRepository())
+7. Compile and Run the quarkus proj
+8. After successfull run the entries for idempotent files will be logged in the appropriate file given in configuration
+9. Simillarly for any type of idempotent repository we can use based on the requirement like JDBC idempotentRepository, Kafka IdempotentRepository etc.
+
+a. Bean class:
+
+package org.nonTrans;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import org.apache.camel.spi.IdempotentRepository;
+import org.apache.camel.support.processor.idempotent.FileIdempotentRepository;
+
+import java.io.File;
+import java.util.logging.Logger;
+
+@ApplicationScoped
+public class TempFileIdempotentRepositoryBean {
+
+    private static final Logger logger= Logger.getLogger(TempFileIdempotentRepositoryBean.class.getSimpleName());
+    String repoPath = System.getProperty("java.io.tmpdir")+"idempotentRepos/sftp-idempotent-repo.txt";
+
+    @Produces
+    public IdempotentRepository fileIdempotentRepository() {
+        logger.info("Class: TempFileIdempotentRepositoryBean, Method: fileIdempotentRepository ---- EXECUTED");
+        logger.info("Idempotent Repository Temp Path: " + repoPath);
+        IdempotentRepository idempotentRepository = FileIdempotentRepository.fileIdempotentRepository(
+                new File(repoPath),
+                250,
+                86400000
+        );
+        return idempotentRepository;
+    }
+}
+
+
+b. Route Class:
+
+package org.nonTrans.sftp.route;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import org.apache.camel.LoggingLevel;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.spi.IdempotentRepository;
+import org.apache.camel.support.processor.idempotent.FileIdempotentRepository;
+import org.nonTrans.TempFileIdempotentRepositoryBean;
+
+import java.io.File;
+import java.io.IOException;
+
+@ApplicationScoped
+public class SftpRoute extends RouteBuilder {
+
+    @Inject
+    TempFileIdempotentRepositoryBean tempFileIdempotentRepositoryBean;
+
+    @Override
+    public void configure() throws Exception {
+        errorHandler(defaultErrorHandler()
+                .logHandled(true)
+                .maximumRedeliveries(3));
+        downloadFromSftpToLocal();
+    }
+
+    //To Download Files from SFTP
+    private void downloadFromSftpToLocal() {
+        from("{{sftp.toLocal.directory}}")
+                .routeId("sftp-download-route")
+                .idempotentConsumer(simple("FILE_NAME : ${file:name} ------- FILE_SIZE : ${file:size} bytes ------- LAST_MODIFIED : ${file:modified}"), tempFileIdempotentRepositoryBean.fileIdempotentRepository())
+                .log(LoggingLevel.INFO,"Attempting to download files from SFTP server")
+                .log(LoggingLevel.INFO,"Connection details \n Host: {{imss.server.ip}}, \n Port: {{imss.server.port}}, \n Directory: {{sftp.toLocal.directory}}")
+                .to("{{local.downloads}}")
+                .log(LoggingLevel.INFO,"Downloaded file ... \n FILE Name : ${file:name}, \n FILE PATH : {{local.downloads}}, \n FILE CONTENT : \n\n ${body}\n")
+                .log(LoggingLevel.INFO,"SFTP download completed successfully");
+    }
