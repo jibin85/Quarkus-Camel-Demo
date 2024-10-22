@@ -1,0 +1,104 @@
+STEPS:
+
+1. Create a Pom.xml and add corresponding dependencies,
+	eg:
+		<dependencies>
+			<!-- Quarkus Apache Camel Core -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-core</artifactId>
+			</dependency>
+			
+			<!-- Quarkus Apache Camel File Component -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-file</artifactId>
+			</dependency>
+
+			<!-- Quarkus Apache Camel Direct Component (for direct routes) -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-direct</artifactId>
+			</dependency>
+
+			<!-- Quarkus RESTEasy (optional, if you're using REST endpoints) -->
+			<dependency>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-resteasy</artifactId>
+			</dependency>
+		</dependencies>
+	Note:
+		if you already have a conflicting rest dependencies for example, 
+		<dependency>
+            <groupId>io.quarkus</groupId>
+           <artifactId>quarkus-rest</artifactId>
+        </dependency>
+		based on the requirement use accordingly.
+		
+2. Define a Camel Route to consume the data from the rest endpoint:
+	Eg:
+		import org.apache.camel.builder.RouteBuilder;
+		import org.apache.camel.Exchange;
+		import javax.enterprise.context.ApplicationScoped;
+
+		@ApplicationScoped
+		public class FileRoute extends RouteBuilder {
+
+			@Override
+			public void configure() throws Exception {
+
+				// Route to consume messages and store them in a file
+				from("direct:storeToFile")
+					.log("Storing data: ${body}")
+					.setHeader(Exchange.FILE_NAME, simple("output-${date:now:yyyyMMddHHmmss}.txt"))
+					.to("file:{{file.output.directory}}");
+
+			}
+		}
+
+3. Define a Rest-Endpoint to send the Data:
+	Eg:
+		import javax.ws.rs.POST;
+		import javax.ws.rs.Path;
+		import javax.ws.rs.core.Response;
+		import org.apache.camel.ProducerTemplate;
+		import javax.inject.Inject;
+
+		@Path("/store")
+		public class StoreDataResource {
+
+			@Inject
+			ProducerTemplate producerTemplate;
+
+			@POST
+			public Response storeData(String data) {
+				// Send data to the Camel route
+				producerTemplate.sendBody("direct:storeToFile", data);
+				return Response.ok("Data stored successfully!").build();
+			}
+		}
+
+4. Configure output directory in application.properties to store the file:
+	Eg: 
+		#Defines the http port manually, by default it is localhost:8080
+		quarkus.http.port=9090 
+
+		rootFolder = file:///D:/HandsOn/quarkus-camel-demo/quarkus-basic-rest
+
+		file.output.directory = {{rootFolder}}/src/test/resources/dataStorage/
+		
+5. Build and Compile your project as usual, check for any compile-time errors or any dependency issues and make sure build is success.
+6. After Successfull build, package your project, make sure package is also success.
+7. After Successfull package, Run the application.
+8. Open git bash (from the project directory) and Post some data to the rest endpoint using the curl command as follow
+	"curl -X POST -d "This is some test data" http://localhost:9090/store"
+	
+9. Check consoles for Success logs or Error logs if any, 
+10. Once Success, check the output directory, file will be created and the data will be stored inside the file.
+
+
+Summary:
+
+REST Endpoint: The REST endpoint accepts a POST request with data and sends it to the Camel route.
+Route: The route reads from a direct:storeToFile endpoint and writes the data into a file in the specified directory.
+File Component: The camel-quarkus-file component handles the file writing.
