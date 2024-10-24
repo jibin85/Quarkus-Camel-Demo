@@ -8,15 +8,9 @@
         <artifactId>quarkus-camel-demo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>quarkus-basic-rest</artifactId>
-    <name>quarkus-basic-rest</name>
-    <description>Demo project for Quarkus-rest based applications</description>
+    <artifactId>quarkus-rest-starter</artifactId>
+    <description>Simple Independent Restfull application starter</description>
     <dependencies>
-        <!-- Apache Camel extension for HTTP integration in Quarkus applications. -->
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-http</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.camel</groupId>
             <artifactId>quarkus-commons</artifactId>

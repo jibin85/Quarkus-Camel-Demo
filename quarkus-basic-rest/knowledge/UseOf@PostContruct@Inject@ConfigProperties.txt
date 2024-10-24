@@ -1,0 +1,189 @@
+SCENARIO:
+
+This is my class
+@Path("/proxy")
+public class HttpProxyResource {
+
+    @Inject
+    @ConfigProperty(name = "testHttpDestination")
+    private String httpDestination;
+
+    private String ACK_MSG = "Successfully Integrated with http backend at " + httpDestination + "\n Response Body: \n";
+
+    @Inject
+    ProducerTemplate producerTemplate;
+
+    @POST
+    @Consumes("application/json")
+    public Response forwardRequest(String requestBody) {
+        // Forward the request to the external HTTP backend
+        String response = ACK_MSG + producerTemplate.requestBody("direct:backend", requestBody, String.class);
+        return Response.ok(response).build();
+    }
+}
+
+its taking value from application.properties
+
+# HTTP CONFIGURATIONS
+
+
+testHttpDestination = http://httpbin.org/post
+
+camel.http.client.connectTimeout=5000
+camel.http.client.socketTimeout=5000
+
+Console Output:
+ curl -X POST -H "Content-Type: application/json" -d '{"Jibin": "Thomas"}' http://localhost:9090/proxy
+Successfully Integrated with http backend at null
+ Response Body:
+{
+  "args": {},
+  "data": "{\"Jibin\": \"Thomas\"}",
+  "files": {},
+  "form": {},
+  "headers": {
+    "Accept-Encoding": "gzip, x-gzip, deflate, br",
+    "Content-Length": "19",
+    "Host": "httpbin.org",
+    "User-Agent": "Apache-HttpClient/5.2.1 (Java/23)",
+    "X-Amzn-Trace-Id": "Root=1-671778fc-6453ad8b39bccc9900ece68b"
+  },
+  "json": {
+    "Jibin": "Thomas"
+  },
+  "origin": "103.87.95.82",
+  "url": "http://httpbin.org/post"
+}
+
+but in console the variable httpDestination is null 
+how to get rid of the same
+
+Solution:
+
+The issue you're encountering with httpDestination being null is likely because the ACK_MSG variable is initialized when the class is instantiated, before the httpDestination property is injected. Therefore, at the time of initialization, httpDestination has not been set yet.
+
+To fix this, you can move the initialization of ACK_MSG into a method that is called after the injection occurs, such as a @PostConstruct method. Here’s how you can do it:
+
+java
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.apache.camel.ProducerTemplate;
+
+@Path("/proxy")
+public class HttpProxyResource {
+
+    @Inject
+    @ConfigProperty(name = "testHttpDestination")
+    private String httpDestination;
+
+    private String ACK_MSG;
+
+    @Inject
+    ProducerTemplate producerTemplate;
+
+    @PostConstruct
+    public void init() {
+        // Initialize ACK_MSG after httpDestination is injected
+        ACK_MSG = "Successfully Integrated with http backend at " + httpDestination + "\n Response Body: \n";
+    }
+
+    @POST
+    @Consumes("application/json")
+    public Response forwardRequest(String requestBody) {
+        // Forward the request to the external HTTP backend
+        String response = ACK_MSG + producerTemplate.requestBody("direct:backend", requestBody, String.class);
+        return Response.ok(response).build();
+    }
+}
+
+
+In this updated code, the ACK_MSG variable is initialized in the init method, which is called after all injections are done, ensuring that httpDestination has been properly set before it is used.
+
+Explanation:
+
+Certainly! Here’s a breakdown of what’s happening in your code and why the changes fixed the issue:
+
+ Original Issue
+
+1. Field Injection: 
+   - The @Inject annotation is used to inject the httpDestination property from your configuration. This happens after the class is instantiated, meaning that the httpDestination variable is not set yet during the class's construction.
+
+2. Initialization Order: 
+   - The ACK_MSG variable was initialized at the time of declaration. At that moment, httpDestination was still null, leading to ACK_MSG being initialized with a null value.
+
+ Solution with @PostConstruct
+
+1. Using @PostConstruct: 
+   - By adding a method annotated with @PostConstruct, you ensure that this method is called after all dependency injections are complete. This guarantees that httpDestination has been properly set by the time ACK_MSG is initialized.
+
+2. Initialization Timing: 
+   - Moving the initialization of ACK_MSG into the init method means that it will only be set after httpDestination has a value. This resolves the null issue because now the message can accurately include the destination URL.
+
+ Summary of the Flow
+
+1. Class Instantiation: The class is instantiated, and fields are created.
+2. Dependency Injection: The Quarkus framework injects the properties (like httpDestination) after instantiation.
+3. PostConstruct Execution: The init method is called, which can now safely use the injected httpDestination to initialize ACK_MSG.
+4. Handling Requests: When the forwardRequest method is called, it constructs the response using the correctly initialized ACK_MSG.
+
+This change ensures that your code handles the lifecycle of dependency injection correctly, allowing you to access configuration values reliably.
+
+If you remove the @Inject annotation from the httpDestination variable, it will not work as intended. Here’s why:
+
+ Without @Inject
+
+1. No Dependency Injection: 
+   - The @Inject annotation is crucial for enabling the Quarkus framework (or any CDI implementation) to automatically provide the value from your configuration (in this case, the testHttpDestination property).
+
+2. Default Value: 
+   - If you remove the @Inject annotation, httpDestination will not be set to the value from application.properties. Instead, it will remain null (or its default value if it’s a primitive type).
+
+3. Initialization of ACK_MSG: 
+   - Since httpDestination would be null, any use of it (including in the construction of ACK_MSG) would lead to incorrect results, just like in the original scenario.
+
+ Summary
+
+- Keeping the @Inject annotation is essential for the property to be injected properly. If you want to retrieve the configuration value, you need the @Inject annotation.
+- Removing it means you’ll have to manually assign a value to httpDestination, which defeats the purpose of using dependency injection for configuration management.
+
+In short, you should retain the @Inject annotation on the httpDestination variable to ensure it gets the intended value from your configuration.
+
+The @ConfigProperty annotation is used to inject configuration properties into your class fields. It is typically combined with the @Inject annotation in frameworks like Quarkus and MicroProfile. Here’s how they work together and what each does:
+
+ @ConfigProperty
+
+- Purpose: It specifies which configuration property to inject into the field. In your case, it indicates that the value for httpDestination should come from the testHttpDestination key defined in your configuration file (like application.properties).
+
+ @Inject
+
+- Purpose: This annotation tells the CDI (Contexts and Dependency Injection) container to inject a dependency. When you use @Inject with @ConfigProperty, you're indicating that the value for that property should be automatically provided by the framework at runtime.
+
+ Together
+
+When you combine @Inject and @ConfigProperty, like this:
+
+java
+@Inject
+@ConfigProperty(name = "testHttpDestination")
+private String httpDestination;
+
+
+1. Dependency Injection: The CDI container sees the @Inject annotation and knows to look for a configuration value.
+2. Property Resolution: The @ConfigProperty annotation specifies which property to resolve, allowing the container to inject the correct value into httpDestination.
+
+ What If You Only Use @ConfigProperty?
+
+If you were to use @ConfigProperty without @Inject, it would not work because the CDI container would not know to perform the injection. You need both annotations to properly retrieve and set the value from your configuration.
+
+ Summary
+
+- Use @ConfigProperty: To specify which configuration property to inject.
+- Use @Inject: To enable dependency injection by the CDI container.
+- Combine Them: To ensure that your field is populated with the correct value from the configuration file. 
+
+In conclusion, both annotations serve distinct roles, and both are necessary for successful configuration property injection in a Quarkus application.

@@ -11,6 +11,8 @@
     <modules>
         <module>quarkus-basic-rest</module>
         <module>quarkus-camel-sftp</module>
+        <module>quarkus-rest-starter</module>
+        <module>quarkus-commons</module>
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -57,6 +59,17 @@
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Quarkus extension for building RESTful services using RESTEasy. -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <!-- REST-assured for testing REST APIs -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- Camel Core for routing and processing -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -93,6 +106,12 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.enterprise</groupId>
@@ -124,6 +143,18 @@
                 <version>${compiler-plugin.version}</version>
                 <configuration>
                     <parameters>true</parameters>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.34</version>
+                        </path>
+                        <path>
+                            <groupId>io.quarkus</groupId>
+                            <artifactId>quarkus-extension-processor</artifactId>
+                            <version>${quarkus.platform.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>

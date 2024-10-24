@@ -1,0 +1,105 @@
+STEPS:
+
+1. Create a Pom.xml and add corresponding dependencies,
+	Eg:
+		<dependencies>
+			<!-- Quarkus Apache Camel Core -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-core</artifactId>
+			</dependency>
+
+			<!-- Quarkus Apache Camel Direct Component (for direct routes) -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-direct</artifactId>
+			</dependency>
+
+			<!-- Quarkus RESTEasy (optional, if you're using REST endpoints) -->
+			<dependency>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-resteasy</artifactId>
+			</dependency>
+			
+			<!-- Apache Camel extension for HTTP integration in Quarkus applications. -->
+			<dependency>
+				<groupId>org.apache.camel.quarkus</groupId>
+				<artifactId>camel-quarkus-http</artifactId>
+			</dependency>
+		</dependencies>
+		
+2. Define a Camel Route to integrate with http:// backend,
+	Eg:
+		package org.route;
+
+		import jakarta.enterprise.context.ApplicationScoped;
+		import org.apache.camel.LoggingLevel;
+		import org.apache.camel.builder.RouteBuilder;
+
+		@ApplicationScoped
+		public class HttpProxyRoute extends RouteBuilder {
+			@Override
+			public void configure() throws Exception {
+				// Route to handle forwarding requests to the external backend
+				from("direct:backend")
+					.to("{{testHttpDestination}}")
+					.log(LoggingLevel.INFO, "Successfully Integrated with below http backend: \n {{testHttpDestination}}");
+			}
+		}
+
+3. Define a Rest-Endpoint to send the Data:
+	Eg:
+		package org.resources;
+
+		import jakarta.inject.Inject;
+		import jakarta.ws.rs.Consumes;
+		import jakarta.ws.rs.POST;
+		import jakarta.ws.rs.Path;
+		import jakarta.ws.rs.core.Response;
+		import org.apache.camel.ProducerTemplate;
+
+		@Path("/proxy")
+		public class HttpProxyResource {
+
+			private static final String ACK_MSG = "Successfully Integrated with below http backend: \n {{testHttpDestination}} \n Response Body: \n";
+
+			@Inject
+			ProducerTemplate producerTemplate;
+
+			@POST
+			@Consumes("application/json")
+			public Response forwardRequest(String requestBody) {
+				// Forward the request to the external HTTP backend
+				String response = ACK_MSG + producerTemplate.requestBody("direct:backend", requestBody, String.class);
+				return Response.ok(response).build();
+			}
+		}
+		
+4. Configure output directory in application.properties to store the file:
+	Eg:
+		#####################
+		# HTTP CONFIGURATIONS
+		#####################
+
+		testHttpDestination = http://httpbin.org/post
+		camel.http.client.connectTimeout=5000
+		camel.http.client.socketTimeout=5000
+		
+5. Build and Compile your project as usual, check for any compile-time errors or any dependency issues and make sure build is success.
+6. After Successfull build, package your project, make sure package is also success.
+7. After Successfull package, Run the application.
+8. Open git bash (from the project directory) and Post some data to the rest endpoint using the curl command as follow
+	"curl -X POST -H "Content-Type: application/json" -d '{"key": "value"}' http://localhost:9090/proxy"
+9. Check consoles for Success logs or Error logs if any, now successfully integrated with http:// backend using Quarkus-camel.
+
+Summary of Steps
+1. Set up the environment: Install JDK, Maven, and Git.
+2. Create a new Quarkus project with the required dependencies using Maven.
+3. Define the REST endpoint and Camel route to handle forwarding requests to an HTTP backend.
+4. Configure application properties for any required settings.
+5. Run the application in development mode using Maven.
+6. Test the integration by sending a POST request to your /proxy endpoint.
+
+Note:
+You can replace http://httpbin.org/post with the actual URL of the HTTP backend you want to integrate with.
+Ensure the backend URL is accessible from your application.

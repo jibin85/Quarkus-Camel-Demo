@@ -1,0 +1,104 @@
+In HTTP (HyperText Transfer Protocol), GET, POST, and PUT are common methods (or verbs) used to communicate between a client (like a web browser or API consumer) and a server. Each method has a distinct purpose and is used for different types of operations on resources.
+
+1. GET Method
+The GET method is used to retrieve or fetch data from a server. When a client sends a GET request, it asks the server for data about a particular resource. GET is a read-only operation and does not modify any data on the server.
+
+Characteristics of GET:
+- Idempotent: Multiple GET requests to the same URL should produce the same result without side effects.
+- Safe: It doesn't alter or create resources on the server.
+- Caching: Responses to GET requests can be cached for future requests, improving efficiency.
+
+Example:
+Request:
+
+GET /users/123 HTTP/1.1
+Host: example.com
+
+
+Response:
+json
+{
+    "id": 123,
+    "name": "John Doe",
+    "email": "john@example.com"
+}
+
+
+In this example, a client requests data about user `123`, and the server responds with that user's details.
+
+2. POST Method
+The POST method is used to send data to the server, often to create new resources or trigger a process. Unlike GET, POST can modify server-side data (like creating a new user, submitting a form, or uploading a file).
+
+Characteristics of POST:
+- Non-idempotent: Sending the same POST request multiple times can have different outcomes (e.g., creating multiple records).
+- Used for Creation: It is typically used when creating new resources.
+- Data in the Body: POST requests include data in the request body, often in JSON, XML, or form-encoded format.
+
+Example:
+Request:
+
+POST /users HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "email": "jane@example.com"
+}
+
+
+Response:
+
+HTTP/1.1 201 Created
+Location: /users/124
+
+
+In this example, a client sends data to the server to create a new user. The server responds with a `201 Created` status and the location of the newly created resource.
+
+3. PUT Method
+The PUT method is used to update or replace an existing resource on the server. Unlike POST, which typically creates new resources, PUT either replaces the entire resource or creates it if it does not already exist.
+
+Characteristics of PUT:
+- Idempotent: Sending the same PUT request multiple times results in the same state (no side effects).
+- Used for Update or Replace: PUT is commonly used to update an existing resource.
+- Data in the Body: PUT requests, like POST, send data in the request body to update the resource.
+
+Example:
+Request:
+
+PUT /users/123 HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{
+    "name": "John Doe Updated",
+    "email": "john.updated@example.com"
+}
+
+
+Response:
+
+HTTP/1.1 200 OK
+
+
+In this example, a client updates the data of user `123`. The server processes the update and responds with a `200 OK` status.
+
+Key Differences
+
+| Method  | Purpose                           | Idempotent | Safe | Typical Usage                                 |
+|-------------|---------------------------------------|----------------|----------|--------------------------------------------------|
+| GET     | Fetches data                          | Yes            | Yes      | Retrieve resources (e.g., viewing a web page)     |
+| POST    | Sends data to the server              | No             | No       | Create new resources (e.g., submitting a form)    |
+| PUT     | Updates or replaces a resource        | Yes            | No       | Update existing resources (e.g., updating a user) |
+
+When to Use Each Method
+- Use GET: When you need to retrieve data without modifying it (e.g., getting a list of users, fetching the details of a specific item).
+- Use POST: When creating a new resource or triggering some processing that requires server-side action (e.g., creating a new user, processing a payment).
+- Use PUT: When you want to update an existing resource or create one if it doesn’t exist (e.g., updating user details or uploading a file that replaces an existing one).
+
+Summary
+- GET: Retrieves data, does not modify the server state.
+- POST: Sends data to the server, typically creating new resources.
+- PUT: Updates or replaces an existing resource on the server.
+
+Each method has a specific use case in the context of RESTful APIs and helps ensure clarity in how clients and servers interact.
