@@ -9,10 +9,11 @@
     <packaging>pom</packaging>
     <name>quarkus-camel-demo</name>
     <modules>
-        <module>quarkus-basic-rest</module>
         <module>quarkus-camel-sftp</module>
-        <module>quarkus-rest-starter</module>
         <module>quarkus-commons</module>
+        <module>quarkus-rest-service-7070</module>
+        <module>quarkus-rest-service-9090</module>
+        
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -69,6 +70,16 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!-- Apache Camel extension for HTTP integration in Quarkus applications. -->
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-http</artifactId>
+        </dependency>
+        <!-- Enables Camel routes to expose or consume RESTful web services within Quarkus. -->
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-rest</artifactId>
         </dependency>
         <!-- Camel Core for routing and processing -->
         <dependency>

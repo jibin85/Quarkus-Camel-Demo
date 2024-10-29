@@ -8,7 +8,15 @@
         <artifactId>quarkus-camel-demo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>quarkus-commons</artifactId>
-    <packaging>pom</packaging>
-    <description>Its a common module to share accross the modules</description>
+    <artifactId>quarkus-rest-service-9090</artifactId>
+    <name>quarkus-rest-service-9090</name>
+    <description>Demo project for Quarkus-rest based applications</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.camel</groupId>
+            <artifactId>quarkus-commons</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
