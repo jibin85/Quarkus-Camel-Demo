@@ -327,8 +327,8 @@ Serverless architecture is a cloud computing model that abstracts the underlying
 - Web Applications: Can be used to build scalable web applications without managing the underlying infrastructure.
 
  7. Popular Serverless Platforms
-- AWS Lambda: Amazon's serverless compute service that runs code in response to events.
-- Azure Functions: Microsoft’s serverless compute service that allows running event-driven code.
+- AWS Lambda: Amazon's serverless compute processor that runs code in response to events.
+- Azure Functions: Microsoft’s serverless compute processor that allows running event-driven code.
 - Google Cloud Functions: Google’s offering for executing code in response to events.
 - IBM Cloud Functions: Built on Apache OpenWhisk, it enables serverless application development.
 

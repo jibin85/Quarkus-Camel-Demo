@@ -13,7 +13,7 @@
         <module>quarkus-commons</module>
         <module>quarkus-rest-service-7070</module>
         <module>quarkus-rest-service-9090</module>
-        
+        <module>quarkus-rest-service-6060</module>
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -96,12 +96,6 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-direct</artifactId>
         </dependency>
-        <!-- Quarkus Camel BeanIO Component for unmarshaling and marshaling data formats -->
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-beanio</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-bean</artifactId>

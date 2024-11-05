@@ -1,8 +1,8 @@
 Overview:
-This Quarkus application acts as a proxy between a client (like curl or a frontend app) and an external HTTP backend service. The flow works as follows:
+This Quarkus application acts as a proxy between a client (like curl or a frontend app) and an external HTTP backend processor. The flow works as follows:
 1. A client sends an HTTP POST request to the Quarkus app’s REST endpoint (/proxy).
-2. The application forwards that request using Apache Camel to an external HTTP service (e.g., httpbin.org).
-3. The response from the external service is received by Camel and forwarded back to the client.
+2. The application forwards that request using Apache Camel to an external HTTP processor (e.g., httpbin.org).
+3. The response from the external processor is received by Camel and forwarded back to the client.
 
 Detailed Breakdown:
 
@@ -50,7 +50,7 @@ class HttpProxyRoute extends RouteBuilder {
 
 - RouteBuilder Class: This is part of the Apache Camel framework, used to define routes for message processing.
 - from("direct:backend"): This defines the starting point of the route. The name direct:backend is used as an internal Camel identifier for routing messages. When the ProducerTemplate sends data to direct:backend, this route gets triggered.
-- to("http://httpbin.org/post"): This is the destination for the message (HTTP request). In this case, the request is forwarded to the external backend at http://httpbin.org/post, which is a simple HTTP testing service.
+- to("http://httpbin.org/post"): This is the destination for the message (HTTP request). In this case, the request is forwarded to the external backend at http://httpbin.org/post, which is a simple HTTP testing processor.
 
 Key Process:
 - The data from the POST request is passed into the Camel route. The route forwards it to the HTTP backend (httpbin.org) using Camel’s HTTP component.
@@ -94,7 +94,7 @@ What Does Each Component Do?
    
 2. Apache Camel: Camel handles the routing and integration logic. It receives data from the REST API and forwards it to the external HTTP backend using Camel's HTTP component. Camel can also handle various other integration tasks, such as logging, error handling, retries, etc.
 
-3. HTTP Backend: This could be any external service you want to interact with. In this example, we used httpbin.org, a public HTTP testing service. However, you could replace it with your actual backend service.
+3. HTTP Backend: This could be any external processor you want to interact with. In this example, we used httpbin.org, a public HTTP testing processor. However, you could replace it with your actual backend processor.
 
 Why This Approach Works
 
@@ -105,7 +105,7 @@ Why This Approach Works
 Summary:
 - Client requests: The client sends a POST request with JSON data to Quarkus.
 - REST API: Quarkus captures the request and forwards it to the Camel route.
-- Camel route: Camel routes the request to an external HTTP service (httpbin.org).
-- Response: The response from the external service is returned to the client.
+- Camel route: Camel routes the request to an external HTTP processor (httpbin.org).
+- Response: The response from the external processor is returned to the client.
 
-You’ve essentially created a proxy service that takes requests from a client, forwards them to an HTTP backend, and returns the response. This architecture can easily be adapted to interact with more complex backends or different protocols.
+You’ve essentially created a proxy processor that takes requests from a client, forwards them to an HTTP backend, and returns the response. This architecture can easily be adapted to interact with more complex backends or different protocols.

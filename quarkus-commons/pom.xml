@@ -9,6 +9,20 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>quarkus-commons</artifactId>
-    <packaging>pom</packaging>
+    <name>quarkus-commons</name>
     <description>Its a common module to share accross the modules</description>
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson</artifactId>
+        </dependency>
+    </dependencies>
 </project>

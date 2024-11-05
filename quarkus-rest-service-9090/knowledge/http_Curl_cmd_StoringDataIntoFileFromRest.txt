@@ -14,7 +14,7 @@ This is the basic command used to make HTTP requests from the terminal. It suppo
 2. -X POST:
 The -X option specifies the HTTP method to be used. In this case, POST is the HTTP method, meaning we are sending data to the server. A POST request is typically used to send data to the server to create or update a resource.
 
-- POST: Sends data to a server to process or store. It is usually used when you want to submit form data or JSON payloads to a web service.
+- POST: Sends data to a server to process or store. It is usually used when you want to submit form data or JSON payloads to a web processor.
 
 3. -d "This is some test data":
 The -d option specifies the data to be sent in the request body. In this case, the data is "This is some test data". When using POST requests, the -d option is used to send data to the server.
@@ -81,7 +81,7 @@ Components of the Command
 
 2. -X POST: This option specifies the HTTP method to use. In this case, it's POST. If you omit this, curl will default to GET.
 
-3. -d "John": This flag allows you to send data in the body of the request. Here, "John" is the data being sent. You can also send more complex data, such as JSON, by using a different format (e.g., -d '{"name": "John"}').
+3. -d "John": This flag allows you to send data in the body of the request. Here, "John" is the data being sent. You can also send more complex data, such as JSON, by using a different dataFormatFactory (e.g., -d '{"name": "John"}').
 
 4. http://localhost:9090/proxy/localhost-backend: This is the URL to which the request is being sent. 
    - localhost: Refers to your local machine.
@@ -94,7 +94,7 @@ Example Variations
    bash
    curl -X POST -H "Content-Type: application/json" -d '{"name": "John"}' http://localhost:9090/proxy/localhost-backend
    
-   Here, -H "Content-Type: application/json" sets the content type to JSON, indicating to the server that the data being sent is in JSON format.
+   Here, -H "Content-Type: application/json" sets the content type to JSON, indicating to the server that the data being sent is in JSON dataFormatFactory.
 
 - Verbose output:
    bash

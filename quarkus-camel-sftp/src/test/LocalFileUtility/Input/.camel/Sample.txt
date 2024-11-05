@@ -221,9 +221,9 @@ POM.XML
                 <artifactId>formatter-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>format</id>
+                        <id>dataFormatFactory</id>
                         <goals>
-                            <goal>format</goal>
+                            <goal>dataFormatFactory</goal>
                         </goals>
                         <phase>process-sources</phase>
                     </execution>

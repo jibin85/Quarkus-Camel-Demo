@@ -1,0 +1,133 @@
+
+This stop.bat is created to stop all the Quarkus services at once.
+
+________________________________________________________________________________________________________________________________________________________________
+
+stop.bat:
+
+@echo off
+echo *********************
+echo stop.bat Begins...
+echo *********************
+
+echo Stopping all Quarkus services...
+
+REM Kill processes by their window titles
+echo Stopping by window titles...
+taskkill /FI "WindowTitle eq quarkus-camel-sftp" /F
+taskkill /FI "WindowTitle eq quarkus-rest-service-6060" /F
+taskkill /FI "WindowTitle eq quarkus-rest-service-7070" /F
+taskkill /FI "WindowTitle eq quarkus-rest-service-9090" /F
+
+REM Kill by specific port numbers
+echo.
+echo Stopping processes on specific ports...
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":6060 "') DO taskkill /F /PID %%P
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":7070 "') DO taskkill /F /PID %%P
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":9090 "') DO taskkill /F /PID %%P
+
+REM Kill any remaining Java processes containing "quarkus" in their command line
+echo.
+echo Stopping any remaining Quarkus processes...
+FOR /F "tokens=2 delims=," %%P IN ('wmic process where "commandline like '%%quarkus%%'" get processid /format:csv') DO (
+    IF NOT "%%P"=="" IF NOT "%%P"=="ProcessId" (
+        echo Stopping process %%P
+        taskkill /F /PID %%P
+    )
+)
+
+REM Kill any java.exe processes running quarkus-run.jar
+echo.
+echo Stopping any remaining Java processes running quarkus-run.jar...
+FOR /F "tokens=2 delims=," %%P IN ('wmic process where "commandline like '%%quarkus-run.jar%%'" get processid /format:csv') DO (
+    IF NOT "%%P"=="" IF NOT "%%P"=="ProcessId" (
+        echo Stopping process %%P
+        taskkill /F /PID %%P
+    )
+)
+
+REM Final check for any lingering CMD windows related to Quarkus
+echo.
+echo Stopping any remaining command windows...
+taskkill /F /FI "WINDOWTITLE eq C:\Windows\system32\cmd.exe - java *" /T
+
+REM Clear any error messages from the last command since it's just a final safety check
+cls
+
+echo.
+echo *********************
+echo Cleanup completed
+echo *********************
+echo.
+echo If you still see any Quarkus-related processes, here they are:
+echo.
+wmic process where "commandline like '%%quarkus%%'" get processid, commandline
+echo.
+echo You can manually kill a specific process using: taskkill /F /PID ProcessID
+echo.
+
+pause
+
+________________________________________________________________________________________________________________________________________________________________
+
+SUMMARY:
+
+It will first try to kill the processes by their window titles (which we set in the run_jar.bat)
+Then it will check for any remaining processes running on the specific ports and kill them
+It includes a pause at the end so you can see any error messages
+
+A few notes:
+
+The /F flag forces the processes to terminate
+Sometimes Windows might ask for administrator privileges to kill processes
+If you're running on different ports, modify the port numbers in the script
+The pause at the end is optional - you can remove it if you don't need to see the output
+
+To use it:
+
+Save it in the same build folder as your run_jar.bat
+Double-click to run it, or run it from command prompt
+If you get a permission error, try running it as administrator
+
+Would you like me to add any additional features to the stop script?
+
+
+This enhanced version:
+
+1. Kills processes by window titles (same as before)
+2. Kills processes running on specific ports (same as before)
+3. Finds and kills any Java processes that have "quarkus" in their command line
+4. Finds and kills any Java processes specifically running quarkus-run.jar
+5. Kills any remaining CMD windows that might be running Java
+6. Shows any remaining Quarkus processes at the end (if any exist)
+
+To use manually for specific processes:
+
+1. If you see any remaining processes in the final list, note their ProcessID
+2. You can then manually kill them using:
+```batch
+taskkill /F /PID ProcessID
+```
+
+For example, if you see a process with ID 12345, you would type:
+```batch
+taskkill /F /PID 12345
+```
+
+You can also create a utility script to kill a specific process:
+
+```batch
+@echo off
+set /p pid="Enter the process ID to kill: "
+taskkill /F /PID %pid%
+pause
+```
+
+Save this as `kill_process.bat` and run it whenever you need to kill a specific process.
+
+These scripts should handle most cases, but if you're still seeing stubborn processes, it might be because:
+1. The process requires elevated privileges (run as administrator)
+2. The process is a system process that can't be killed
+3. The process is being immediately restarted by another service
+
+Let me know if you still see any processes that aren't being killed!

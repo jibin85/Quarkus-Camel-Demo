@@ -1,0 +1,182 @@
+PROBLEM STATEMENT:
+The following configuration created a localIdempotentRepository in build folder i.e., quarkus-camel-demo/build/ instead of creating under module quarkus-camel-demo/quarkus-camel-sftp/src/main/resources/
+
+CONFIGURATION:
+________________________________________________________________________________________________________________________________________________________________
+
+application.properties:
+######################
+#Common configurations
+######################
+
+rootFolder = file:///D:/HandsOn/quarkus-camel-demo/quarkus-camel-sftp
+
+##################################################
+#Simple-Idempotent-Repository-Local-Configurations
+##################################################
+
+idempotentRepoSource =  {{rootFolder}}/src/test/LocalFileUtility/FileIdempotentRepositoryTest/Input/?noop=true
+idempotentRepoDestination = {{rootFolder}}/src/test/LocalFileUtility/FileIdempotentRepositoryTest/Output/
+idempotentRepoFileName = idempotent-repo.txt
+idempotentRepoFilePath = src/main/resources/localIdempotetnRepository
+idempotentReference = ${idempotentRepoFilePath}/${idempotentRepoFileName}
+
+________________________________________________________________________________________________________________________________________________________________
+
+SOLUTION:
+
+Actually, the configuration is fine, the actual issue was in run_jar.bat file, since its constantly changing the directories.
+
+to avoid this, I used a different approach in the run_jar.bat, as follows,
+________________________________________________________________________________________________________________________________________________________________
+
+run_jar.bat:
+@echo off
+echo *********************
+echo run_jar.bat Begins...
+echo *********************
+
+REM Store the original directory
+SET "ORIGINAL_DIR=%CD%"
+SET "WORK_DIR=D:\HandsOn\quarkus-camel-demo\quarkus-camel-sftp"
+
+REM Debug: Print current directory
+echo Current Directory: %CD%
+
+REM Change to the parent directory of 'build'
+CD /D "%ORIGINAL_DIR%\.." || (
+    echo Error: Failed to change to parent directory
+    exit /b 1
+)
+
+REM Debug: Print directory after moving up
+echo Directory after moving up: %CD%
+
+REM Change to the directories containing the JAR files and set directories
+CD /D "%CD%\quarkus-camel-sftp\target" || (
+    echo Error: Failed to change directory to quarkus-camel-sftp/target
+    exit /b 1
+)
+SET "quarkus_camel_sftp=%CD%"
+
+REM Change back to parent directory before next change
+CD /D "%ORIGINAL_DIR%\.."
+
+CD /D "%CD%\quarkus-rest-service-6060\target" || (
+    echo Error: Failed to change directory to quarkus-rest-service-6060/target
+    exit /b 1
+)
+SET "quarkus_rest_service_6060=%CD%"
+
+REM Change back to parent directory before next change
+CD /D "%ORIGINAL_DIR%\.."
+
+CD /D "%CD%\quarkus-rest-service-7070\target" || (
+    echo Error: Failed to change directory to quarkus-rest-service-7070/target
+    exit /b 1
+)
+SET "quarkus_rest_service_7070=%CD%"
+
+REM Change back to parent directory before next change
+CD /D "%ORIGINAL_DIR%\.."
+
+CD /D "%CD%\quarkus-rest-service-9090\target" || (
+    echo Error: Failed to change directory to quarkus-rest-service-9090/target
+    exit /b 1
+)
+SET "quarkus_rest_service_9090=%CD%"
+
+REM Change back to the original directory before running the JAR files
+CD /D "%ORIGINAL_DIR%" || (
+    echo Error: Failed to return to original directory
+    exit /b 1
+)
+
+REM Check if the JAR files exist before trying to run them
+if not exist "%quarkus_camel_sftp%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_camel_sftp%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
+if not exist "%quarkus_rest_service_6060%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_rest_service_6060%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
+if not exist "%quarkus_rest_service_7070%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_rest_service_7070%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
+if not exist "%quarkus_rest_service_9090%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_rest_service_9090%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
+REM Create necessary directories if they don't exist
+mkdir "%WORK_DIR%\src\main\resources\localIdempotetnRepository" 2>nul
+echo Created/Verified idempotent repository directory
+
+REM Run the JAR files with working directory set
+START "quarkus-camel-sftp" CMD /k "cd /d "%WORK_DIR%" && java -Duser.dir="%WORK_DIR%" -jar "%quarkus_camel_sftp%\quarkus-app\quarkus-run.jar""
+@REM START "quarkus-rest-service-6060" CMD /c java -jar "%quarkus_rest_service_6060%\quarkus-app\quarkus-run.jar"
+@REM START "quarkus-rest-service-7070" CMD /c java -jar "%quarkus_rest_service_7070%\quarkus-app\quarkus-run.jar"
+@REM START "quarkus-rest-service-9090" CMD /c java -jar "%quarkus_rest_service_9090%\quarkus-app\quarkus-run.jar"
+
+REM Check the error level of the last command
+if %ERRORLEVEL% neq 0 (
+    echo Error: JAR file execution failed with error code %ERRORLEVEL%.
+    exit /b %ERRORLEVEL%
+)
+
+REM Return to the original directory
+CD /D "%ORIGINAL_DIR%" || (
+    echo Error: Failed to return to original directory
+    exit /b 1
+)
+
+echo *********************
+echo run_jar.bat Completed
+echo *********************
+________________________________________________________________________________________________________________________________________________________________
+
+SUMMARY:
+
+Key changes made:
+
+Added WORK_DIR variable at the beginning to set the base working directory
+Added a command to create the idempotent repository directory if it doesn't exist
+Modified the JAR execution command to:
+
+Change to the working directory first (cd /d "%WORK_DIR%")
+Set the user.dir system property (-Duser.dir="%WORK_DIR%")
+
+
+Added completion message at the end
+
+Make sure to:
+
+Update the WORK_DIR path to match your actual project path
+Test if the directories are being created correctly before the JAR runs
+Verify that the working directory is set correctly when the application starts
+
+Would you like me to explain any part of these changes in more detail? CopyRetryClaude does not have the ability to run the code it generates yet.IAFinally this is working fine thanksEditYou're welcome! Just to summarize what we fixed:
+
+The main issue was the working directory problem where files were being created in the build folder instead of the intended location
+We solved it by:
+
+Setting an explicit WORK_DIR in the batch file
+Adding the -Duser.dir system property
+Creating necessary directories before running the JAR
+Using proper path resolution with cd /d command
+
+
+
+Some best practices to remember for future:
+
+Always use absolute paths in production environments
+Ensure working directories are explicitly set when running JARs
+Create required directories as part of your deployment script
+Use proper property resolution syntax in Quarkus (${property} instead of {{property}})
+
+If you need any further assistance or have questions about other aspects of your Quarkus-Camel application, feel free to ask! CopyRetryClaude can make mistakes. Please double-check responses.

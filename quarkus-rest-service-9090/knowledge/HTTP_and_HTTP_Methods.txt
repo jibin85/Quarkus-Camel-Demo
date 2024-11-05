@@ -117,9 +117,9 @@ The parameter `?bridgeEndpoint=true` is often used in web applications or APIs t
 
 Common Uses
 
-1. Enabling a Bridge: In some frameworks or APIs, this parameter may signify that the request should be processed in a way that bridges different services or protocols. For example, it might allow the server to communicate with a backend service or a different API endpoint.
+1. Enabling a Bridge: In some frameworks or APIs, this parameter may signify that the request should be processed in a way that bridges different services or protocols. For example, it might allow the server to communicate with a backend processor or a different API endpoint.
 
-2. Proxying Requests: It might instruct the server to act as a proxy, forwarding the request to another service or endpoint while preserving some request attributes or context.
+2. Proxying Requests: It might instruct the server to act as a proxy, forwarding the request to another processor or endpoint while preserving some request attributes or context.
 
 3. Feature Toggles: It can also serve as a feature toggle, allowing developers to enable or disable specific functionality in a testing or production environment.
 
@@ -127,7 +127,7 @@ Common Uses
 
 Example Scenario
 
-For instance, if you have an API that communicates with multiple backend services, adding `?bridgeEndpoint=true` might allow the API to route the request to a designated service instead of the default one, providing flexibility in how requests are handled.
+For instance, if you have an API that communicates with multiple backend services, adding `?bridgeEndpoint=true` might allow the API to route the request to a designated processor instead of the default one, providing flexibility in how requests are handled.
 
 Conclusion
 

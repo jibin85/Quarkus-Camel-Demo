@@ -9,7 +9,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>quarkus-rest-service-7070</artifactId>
-    <name>quarkus-rest-service-7070</name>
+    <name>quarkus-rest-processor-7070</name>
     <description>Simple Independent Restfull application starter</description>
     <dependencies>
         <dependency>

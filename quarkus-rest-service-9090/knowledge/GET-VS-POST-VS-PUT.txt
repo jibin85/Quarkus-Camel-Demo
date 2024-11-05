@@ -32,7 +32,7 @@ The POST method is used to send data to the server, often to create new resource
 Characteristics of POST:
 - Non-idempotent: Sending the same POST request multiple times can have different outcomes (e.g., creating multiple records).
 - Used for Creation: It is typically used when creating new resources.
-- Data in the Body: POST requests include data in the request body, often in JSON, XML, or form-encoded format.
+- Data in the Body: POST requests include data in the request body, often in JSON, XML, or form-encoded dataFormatFactory.
 
 Example:
 Request:
