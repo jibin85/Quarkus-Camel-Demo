@@ -1,0 +1,226 @@
+STEPS:
+
+1. Compile the module
+2. Package it
+3. Run the service
+4. Based on the type of integration accordingly follow the cURL approaches
+	a. Direct cmd line approach
+	b. Payload file approach
+
+________________________________________________________________________________________________________________________________________________________________
+
+CURL Commands for each integrations:
+																		DIRECT APPROACH
+1. Simple text Mail:
+curl -X POST http://localhost:7272/email/text -H "Content-Type: application/json" -d '@-' << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "Test Email",
+  "content": "This is a test email"
+}
+EOF   
+	
+	where,
+	Key differences explained:
+		-d "@-" tells curl to read the POST data from stdin
+		<< 'EOF' (notice the quotes around EOF) prevents shell interpretation of the content
+		No need for escaping quotes (\") in the JSON
+		The document ends with EOF on a new line
+
+	If you want the shell to interpret the $(cat encoded.txt) command, use << EOF without quotes:
+	This is much cleaner and easier to read than using escaped quotes!
+   ____________________________________________________________________________________________________________________________________________________________
+   
+2. Integrate Email with HTML:
+
+HTML Email:
+curl -X POST http://localhost:7272/email/html -H "Content-Type: application/json" -d "@-" << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "HTML Test Email",
+  "content": "<html><body><h1 style='color: blue;'>Hello!</h1><p>This is a <b>formatted</b> test email with HTML.</p></body></html>"
+}
+EOF   
+	
+		# First, save the HTML content to a file
+		cat > about-me-dark-theme.html << 'HTMLEOF'
+		<!DOCTYPE html>
+		<html lang="en">
+		<!-- Your entire HTML content here -->
+		</html>
+		HTMLEOF
+		
+		or if you already have the file use this format
+
+		# Then send the email using the HTML file content
+curl -X POST http://localhost:7272/email/html \
+-H "Content-Type: application/json" \
+-d "@-" << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "HTML Test Email",
+  "content": "$(cat about-me-dark-theme.html | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')"
+}
+EOF
+   ____________________________________________________________________________________________________________________________________________________________
+   
+3. Integrate Email with attachments:
+
+	1. Create a test PDF file first
+
+		# Create a simple text file named test.txt
+		echo "This is a test document" > test.txt
+
+
+	2. Convert file to Base64
+
+		# This command converts your file to base64 and saves it in encoded.txt
+		base64 test.txt > encoded.txt
+
+		# You can verify the content
+		cat encoded.txt
+		# It will show something like: VGhpcyBpcyBhIHRlc3QgZG9jdW1lbnQK
+
+
+	3. Send the email with attachment
+		Here's the simplified version first:
+
+curl -X POST http://localhost:7272/email/attachment -H "Content-Type: application/json" -d "@-" << EOF
+{
+	"to": "nt.jibin85@gmail.com",
+	"subject": "Test Email with Attachment",
+	"content": "Please find the attached document.",
+	"attachmentName": "test.txt",
+	"attachmentContent": "$(cat encoded.txt)",
+	"attachmentContentType": "text/plain"
+}
+EOF
+	____________________________________________________________________________________________________________________________________________________________
+	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+		Let's try with different file types:
+
+		1. For Text File:
+
+			# Create and encode text file
+			echo "Hello, this is a test document" > test.txt
+			base64 test.txt > encoded.txt
+
+			# Send email
+curl -X POST http://localhost:7272/email/attachment \
+-H "Content-Type: application/json" \
+-d "{
+	\"to\": \"nt.jibin85@gmail.com\",
+	\"subject\": \"Text File Attachment\",
+	\"content\": \"Please find the attached text file.\",
+	\"attachmentName\": \"test.txt\",
+	\"attachmentContent\": \"$(cat encoded.txt)\",
+	\"attachmentContentType\": \"text/plain\"
+}"
+
+
+		2. For PDF File (assuming you have a test.pdf):
+
+			# Encode PDF file
+			base64 test.pdf > encoded.txt
+
+			# Send email
+curl -X POST http://localhost:7272/email/attachment \
+-H "Content-Type: application/json" \
+-d "{
+	\"to\": \"nt.jibin85@gmail.com\",
+	\"subject\": \"PDF Attachment\",
+	\"content\": \"Please find the attached PDF.\",
+	\"attachmentName\": \"test.pdf\",
+	\"attachmentContent\": \"$(cat encoded.txt)\",
+	\"attachmentContentType\": \"application/pdf\"
+}"
+
+
+		3. For Image File (assuming you have test.jpg):
+
+			# Encode image file
+			base64 test.jpg > encoded.txt
+
+			# Send email
+curl -X POST http://localhost:7272/email/attachment \
+-H "Content-Type: application/json" \
+-d "{
+	\"to\": \"nt.jibin85@gmail.com\",
+	\"subject\": \"Image Attachment\",
+	\"content\": \"Please find the attached image.\",
+	\"attachmentName\": \"test.jpg\",
+	\"attachmentContent\": \"$(cat encoded.txt)\",
+	\"attachmentContentType\": \"image/jpeg\"
+}"
+
+
+			Common Content Types:
+			- Text file: `text/plain`
+			- PDF: `application/pdf`
+			- JPEG image: `image/jpeg`
+			- PNG image: `image/png`
+			- Word document: `application/msword`
+			- Excel file: `application/vnd.ms-excel`
+
+			For Windows PowerShell, the commands would be slightly different:
+			powershell
+			# Convert file to base64
+			$fileContent = [Convert]::ToBase64String([IO.File]::ReadAllBytes("test.txt"))
+
+			# Send email
+			$body = @{
+				to = "nt.jibin85@gmail.com"
+				subject = "Test Email with Attachment"
+				content = "Please find the attached document."
+				attachmentName = "test.txt"
+				attachmentContent = $fileContent
+				attachmentContentType = "text/plain"
+			} | ConvertTo-Json
+
+			curl.exe -X POST http://localhost:7272/email/attachment `
+			-H "Content-Type: application/json" `
+			-d $body
+	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																		PAYLOAD FILE APPROACH
+	Put the JSON in a separate file:															
+		# Create payload.json
+	{
+		"to": "nt.jibin85@gmail.com",
+		"subject": "Test Email with Attachment",
+		"content": "Please find the attached document.",
+		"attachmentName": "test.txt",
+		"attachmentContent": "BASE64_CONTENT_HERE",
+		"attachmentContentType": "text/plain"
+	}
+
+	# Use the file in curl
+curl -X POST http://localhost:7272/email/attachment \
+-H "Content-Type: application/json" \
+-d @payload.json
+	
+	The second approach (using a separate file) is generally preferred because it:
+		1. Is more readable
+		2. Avoids escaping issues
+		3. Makes it easier to edit and maintain the JSON
+		4. Reduces command line errors
+
+________________________________________________________________________________________________________________________________________________________________
+
+Important Notes:
+1. Make sure your file isn't too large (most email servers have limits)
+2. The content type must match your file type
+3. The attachment name should have the correct extension
+4. Base64 encoding increases the file size by approximately 33%
+5. Git bash in a resource package so that it can organise the generated and encoded files.
+6. Both approaches work on all scenarios, but when to use what approach is prefereable.
+
+
+APPROACHES:
+
+There are two approaches to send the smtp request to send a mail
+1. Direct cmd line approach
+2. Payload file approach

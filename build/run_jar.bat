@@ -53,6 +53,15 @@ CD /D "%CD%\quarkus-rest-service-9090\target" || (
 )
 SET "quarkus_rest_service_9090=%CD%"
 
+REM Add email integration module directory
+CD /D "%ORIGINAL_DIR%\.."
+
+CD /D "%CD%\quarkus-email-integration\target" || (
+    echo Error: Failed to change directory to quarkus-email-integration/target
+    exit /b 1
+)
+SET "quarkus_email_integration=%CD%"
+
 REM Change back to the original directory before running the JAR files
 CD /D "%ORIGINAL_DIR%" || (
     echo Error: Failed to return to original directory
@@ -80,15 +89,21 @@ if not exist "%quarkus_rest_service_9090%\quarkus-app\quarkus-run.jar" (
     exit /b 1
 )
 
+if not exist "%quarkus_email_integration%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_email_integration%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
 REM Create necessary directories if they don't exist
 mkdir "%WORK_DIR%\src\main\resources\localIdempotetnRepository" 2>nul
 echo Created/Verified idempotent repository directory
 
 REM Run the JAR files with working directory set
-@REM START "quarkus-camel-sftp" CMD /c "cd /d "%WORK_DIR%" && java -Duser.dir="%WORK_DIR%" -jar "%quarkus_camel_sftp%\quarkus-app\quarkus-run.jar""
-@REM START "quarkus-rest-service-6060" CMD /c java -jar "%quarkus_rest_service_6060%\quarkus-app\quarkus-run.jar"
-@REM START "quarkus-rest-service-7070" CMD /c java -jar "%quarkus_rest_service_7070%\quarkus-app\quarkus-run.jar"
+START "quarkus-camel-sftp" CMD /c "cd /d "%WORK_DIR%" && java -Duser.dir="%WORK_DIR%" -jar "%quarkus_camel_sftp%\quarkus-app\quarkus-run.jar""
+START "quarkus-rest-service-6060" CMD /c java -jar "%quarkus_rest_service_6060%\quarkus-app\quarkus-run.jar"
+START "quarkus-rest-service-7070" CMD /c java -jar "%quarkus_rest_service_7070%\quarkus-app\quarkus-run.jar"
 START "quarkus-rest-service-9090" CMD /c java -jar "%quarkus_rest_service_9090%\quarkus-app\quarkus-run.jar"
+START "quarkus-email-integration" CMD /c java -jar "%quarkus_email_integration%\quarkus-app\quarkus-run.jar"
 
 REM Check the error level of the last command
 if %ERRORLEVEL% neq 0 (

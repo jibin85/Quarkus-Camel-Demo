@@ -14,6 +14,7 @@
         <module>quarkus-rest-service-7070</module>
         <module>quarkus-rest-service-9090</module>
         <module>quarkus-rest-service-6060</module>
+        <module>quarkus-email-integration</module>
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -117,7 +118,6 @@
             <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
@@ -191,28 +191,6 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.codehaus.mojo</groupId>-->
-            <!--                <artifactId>jaxb2-maven-plugin</artifactId>-->
-            <!--                <version>2.5.0</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>insurance-xml-endpoint</id>-->
-            <!--                        <goals>-->
-            <!--                            <goal>xjc</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <clearOutputDir>false</clearOutputDir>-->
-            <!--                            <packageName>com.insurance.xmlendpoint</packageName>-->
-            <!--                            <sources>-->
-            <!--                                <source>-->
-            <!--                                    src/main/resources/xsd/validClaimSchema.xsd-->
-            <!--                                </source>-->
-            <!--                            </sources>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 

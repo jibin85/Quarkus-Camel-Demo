@@ -1,0 +1,116 @@
+title: http req to File store
+module: quakus-rest-service-9090
+route: rest-msg-send-service-route
+curl -X POST http://localhost:9090/store -d \
+"Hello Mic testing 1"
+
+title: MRP Calculation with JSON http request
+module: quakus-rest-service-9090
+route: json-mrp-price-calculation-route
+curl -X POST http://localhost:9090/api/calculate-price -H 'Content-Type: application/json' -d \
+'{
+    "originalRate": 100.00
+}'
+
+title: JSON validation
+module: quakus-rest-service-9090
+route: json-validation-route
+curl -X POST http://localhost:9090/jsonValidation -H "Content-Type: application/json" -d \
+'{"name": "Jibin Thomas"}' 
+
+title: JSON http integration with org
+module: quakus-rest-service-9090
+route: rest-http-integration-route
+curl -X POST http://localhost:9090/proxy/http-backend -H "Content-Type: application/json" -d \
+'{"name": "Jibin Thomas"}'
+
+title: JSON http integration with localhost:7070
+module: quakus-rest-service-9090
+route: rest-msg-send-service-route
+curl -X POST http://localhost:9090/proxy/localhost-backend -d \
+"Jibin Thomas" 
+
+title: XML http validation
+module: quakus-rest-service-6060
+route: xml-mrp-price-calculation-route
+curl -X POST http://localhost:6060/api/price -H 'Content-Type: application/xml' -d \
+'<priceRequest>
+    <originalPrice>100.00</originalPrice>
+</priceRequest>'
+
+title: JSON gmail integration - plain text
+module: quakus-email-integration
+route: text-mail-route
+curl -X POST http://localhost:7272/email/text -H "Content-Type: application/json" -d '@-' << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "Test Email",
+  "content": "This is a test email"
+}
+EOF
+
+
+title: JSON gmail integration - HTML format
+module: quakus-email-integration
+route: html-mail-route
+curl -X POST http://localhost:7272/email/html -H "Content-Type: application/json" -d "@-" << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "HTML Test Email",
+  "content": "<html><body><h1 style='color: blue;'>Hello!</h1><p>This is a <b>formatted</b> test email with HTML.</p></body></html>"
+}
+EOF
+
+		# First, save the HTML content to a file
+		cat > about-me-dark-theme.html << 'HTMLEOF'
+		<!DOCTYPE html>
+		<html lang="en">
+		<!-- Your entire HTML content here -->
+		</html>
+		HTMLEOF
+
+		or if you already have the file use this format
+
+		# Then send the email using the HTML file content
+curl -X POST http://localhost:7272/email/html \
+-H "Content-Type: application/json" \
+-d "@-" << EOF
+{
+  "to": "nt.jibin85@gmail.com",
+  "subject": "HTML Test Email",
+  "content": "$(cat about-me-dark-theme.html | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')"
+}
+EOF
+
+title: JSON gmail integration - plain text
+module: quakus-email-integration
+route: attachment-mail-route
+	1. Create a test PDF file first
+
+		# Create a simple text file named test.txt
+		echo "This is a test document" > test.txt
+
+
+	2. Convert file to Base64
+
+		# This command converts your file to base64 and saves it in encoded.txt
+		base64 test.txt > encoded.txt
+
+		# You can verify the content
+		cat encoded.txt
+		# It will show something like: VGhpcyBpcyBhIHRlc3QgZG9jdW1lbnQK
+
+
+	3. Send the email with attachment
+		Here's the simplified version first:
+
+curl -X POST http://localhost:7272/email/attachment -H "Content-Type: application/json" -d "@-" << EOF
+{
+	"to": "nt.jibin85@gmail.com",
+	"subject": "Test Email with Attachment",
+	"content": "Please find the attached document.",
+	"attachmentName": "test.txt",
+	"attachmentContent": "$(cat encoded.txt)",
+	"attachmentContentType": "text/plain"
+}
+EOF
