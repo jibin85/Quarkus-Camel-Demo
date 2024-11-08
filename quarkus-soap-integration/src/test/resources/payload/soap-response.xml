@@ -1,0 +1,9 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns2:getWeatherResponse xmlns:ns2="http://weather.example.com/">
+            <temperature>20.5</temperature>
+            <conditions>Partly Cloudy</conditions>
+            <humidity>65.0</humidity>
+        </ns2:getWeatherResponse>
+    </soap:Body>
+</soap:Envelope>

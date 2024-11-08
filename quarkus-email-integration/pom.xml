@@ -10,22 +10,26 @@
     </parent>
     <artifactId>quarkus-email-integration</artifactId>
     <name>quarkus-email-integration</name>
-    <description>To Integrate with Email</description>
+    <description>Demo Module to integrate with Emails for Quarkus based applications</description>
     <dependencies>
+        <!-- Dependency for Common Utilities inside this user-defined quarkus-common module -->
         <dependency>
             <groupId>org.camel</groupId>
             <artifactId>quarkus-commons</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Apache Camel Quarkus extension for email handling -->
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-mail</artifactId>
 		</dependency>
+        <!-- Apache Camel Quarkus extension for handling file attachments -->
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-attachments</artifactId>
 		</dependency>
+        <!-- Quarkus extension for integrating RESTEasy with Jackson for JSON support -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-jackson</artifactId>

@@ -10,16 +10,14 @@
     </parent>
     <artifactId>quarkus-commons</artifactId>
     <name>quarkus-commons</name>
-    <description>Its a common module to share accross the modules</description>
+    <description>Its a common module to share utilities accross other modules</description>
     <dependencies>
+        <!-- Quarkus extension for JSON binding with Jackson -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jackson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-jackson</artifactId>
-        </dependency>
+        <!-- Apache Camel extension for JSON data processing using Jackson -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>

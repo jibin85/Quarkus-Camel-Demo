@@ -9,12 +9,13 @@
     <packaging>pom</packaging>
     <name>quarkus-camel-demo</name>
     <modules>
-        <module>quarkus-camel-sftp</module>
         <module>quarkus-commons</module>
+        <module>quarkus-camel-sftp</module>
+        <module>quarkus-email-integration</module>
+        <module>quarkus-soap-integration</module>
         <module>quarkus-rest-service-7070</module>
         <module>quarkus-rest-service-9090</module>
         <module>quarkus-rest-service-6060</module>
-        <module>quarkus-email-integration</module>
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -32,6 +33,7 @@
     <!-- Camel BOM for managing compatible dependencies -->
     <dependencyManagement>
         <dependencies>
+            <!-- BOM for Apache Camel Quarkus extensions to import a specific Camel version -->
             <dependency>
                 <groupId>org.apache.camel.quarkus</groupId>
                 <artifactId>camel-quarkus-bom</artifactId>
@@ -39,6 +41,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- BOM for the Quarkus platform to manage consistent versions of Quarkus dependencies -->
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
@@ -72,31 +75,27 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Apache Camel extension for HTTP integration in Quarkus applications. -->
+        <!-- Camel Core for routing and processing -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-http</artifactId>
+            <artifactId>camel-quarkus-core</artifactId>
         </dependency>
         <!-- Enables Camel routes to expose or consume RESTful web services within Quarkus. -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-rest</artifactId>
         </dependency>
-        <!-- Camel Core for routing and processing -->
+        <!-- Apache Camel extension for HTTP integration in Quarkus applications. -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-core</artifactId>
-        </dependency>
-        <!-- Camel File Component for file consumption -->
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-file</artifactId>
+            <artifactId>camel-quarkus-http</artifactId>
         </dependency>
         <!-- Provides direct, synchronous routing between Camel endpoints in Quarkus -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-direct</artifactId>
         </dependency>
+        <!-- Apache Camel Quarkus extension for integrating with Java Beans -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-bean</artifactId>
@@ -106,18 +105,25 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jaxb</artifactId>
         </dependency>
+        <!-- Apache Camel Quarkus extension for Jackson data format integration in Camel routes. -->
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-jackson</artifactId>
+        </dependency>
         <!-- Apache Commons Lang library provides utility methods for core Java classes, such as String manipulation and null handling. -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+        <!-- Lombok library to reduce boilerplate code for Java classes (provided scope) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Jakarta EE CDI API for Contexts and Dependency Injection -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>

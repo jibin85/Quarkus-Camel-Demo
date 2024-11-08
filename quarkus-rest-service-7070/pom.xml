@@ -10,8 +10,11 @@
     </parent>
     <artifactId>quarkus-rest-service-7070</artifactId>
     <name>quarkus-rest-processor-7070</name>
-    <description>Simple Independent Restfull application starter</description>
+    <description>Demo Module for handling JSON based payloads from another http port 9090 and Simple Independent Restfull
+        application starter on port 7070 for Quarkus based applications
+    </description>
     <dependencies>
+        <!-- Dependency for Common Utilities inside this user-defined quarkus-common module -->
         <dependency>
             <groupId>org.camel</groupId>
             <artifactId>quarkus-commons</artifactId>

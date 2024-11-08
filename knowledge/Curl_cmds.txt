@@ -114,3 +114,31 @@ curl -X POST http://localhost:7272/email/attachment -H "Content-Type: applicatio
 	"attachmentContentType": "text/plain"
 }
 EOF
+
+title: Rest-SOAP-Integration
+module: quakus-soap-integration
+route: rest-soap-integration-route
+To Check the Wsdl is fine:
+
+	curl -X GET http://localhost:8686/services/weather?wsdl
+
+To Initiate the Process:
+
+	curl -X GET "http://localhost:8686/weather/London/UK"
+
+To Check via SOAP request:
+
+curl -X POST http://localhost:8686/services/weather \
+	 -H "Content-Type: text/xml;charset=UTF-8" \
+     -H "SOAPAction: http://weather.example.com/getWeather" \
+     -d '
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:web="http://weather.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <web:getWeatherRequest>
+         <city>London</city>
+         <country>UK</country>
+      </web:getWeatherRequest>
+   </soapenv:Body>
+</soapenv:Envelope>'

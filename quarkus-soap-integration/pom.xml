@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.camel</groupId>
+        <artifactId>quarkus-camel-demo</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>quarkus-soap-integration</artifactId>
+    <name>quarkus-soap-integration</name>
+    <description>Demo module to Integrate with Soap web services for quarkus based applications</description>
+    <dependencies>
+		<!-- Dependency for Common Utilities inside this user-defined quarkus-common module -->
+        <dependency>
+            <groupId>org.camel</groupId>
+            <artifactId>quarkus-commons</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jsonb</artifactId>
+        </dependency>
+        <!-- Quarkus extension for integrating Apache CXF, enabling SOAP and RESTful web services support. -->
+        <dependency>
+            <groupId>io.quarkiverse.cxf</groupId>
+            <artifactId>quarkus-cxf</artifactId>
+        </dependency>
+        <!-- Apache CXF Runtime -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+        </dependency>
+		<!-- Apache Camel Quarkus extension for integrating CXF (Apache CXF) for SOAP and RESTful web services. -->
+		<dependency>
+			<groupId>org.apache.camel.quarkus</groupId>
+			<artifactId>camel-quarkus-cxf-soap</artifactId>
+		</dependency>
+        <!-- Apache Camel Quarkus extension for integrating SOAP-based web services in Camel routes. -->
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-soap</artifactId>
+        </dependency>
+        <!-- For CXF Code Generation -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-codegen-plugin</artifactId>
+            <version>4.0.3</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>4.0.3</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/weather-service.wsdl</wsdl>
+                                    <packagenames>
+                                        <packagename>com.example.weather.generated</packagename>
+                                    </packagenames>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
