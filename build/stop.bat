@@ -13,6 +13,7 @@ taskkill /FI "WindowTitle eq quarkus-rest-service-7070" /F
 taskkill /FI "WindowTitle eq quarkus-rest-service-9090" /F
 taskkill /FI "WindowTitle eq quarkus-email-integration" /F
 taskkill /FI "WindowTitle eq quarkus-soap-integration" /F
+taskkill /FI "WindowTitle eq quarkus-swagger-integration" /F
 
 REM Kill by specific port numbers
 echo.
@@ -23,6 +24,8 @@ FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":9090 "') DO taskkill /F /PI
 FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":8080 "') DO taskkill /F /PID %%P
 FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":7272 "') DO taskkill /F /PID %%P
 FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":9090 "') DO taskkill /F /PID %%P
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":9393 "') DO taskkill /F /PID %%P
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr ":8686 "') DO taskkill /F /PID %%P
 
 REM Kill any remaining Java processes containing "quarkus" in their command line
 echo.

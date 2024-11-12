@@ -1,0 +1,10 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:web="http://weather.example.com/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <web:getWeatherRequest>
+            <city>London</city>
+            <country>UK</country>
+        </web:getWeatherRequest>
+    </soapenv:Body>
+</soapenv:Envelope>

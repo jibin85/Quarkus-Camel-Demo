@@ -1,2 +1,2 @@
 Site: https://patorjk.com/software/taag/
-font: Graffiti
+font: Slant

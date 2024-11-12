@@ -13,6 +13,7 @@
         <module>quarkus-camel-sftp</module>
         <module>quarkus-email-integration</module>
         <module>quarkus-soap-integration</module>
+        <module>quarkus-swagger-integration</module>
         <module>quarkus-rest-service-7070</module>
         <module>quarkus-rest-service-9090</module>
         <module>quarkus-rest-service-6060</module>
