@@ -142,3 +142,69 @@ curl -X POST http://localhost:8686/services/weather \
       </web:getWeatherRequest>
    </soapenv:Body>
 </soapenv:Envelope>'
+
+
+title: Swagger-Integration
+module: quakus-swagger-integration
+route: default-greeting-route
+# Get default greeting
+curl -X GET "http://localhost:9393/api/greeting" -H "accept: application/json"
+
+route: personal-greeting-route
+# Get personalized greeting
+curl -X GET "http://localhost:9393/api/greeting/John" -H "accept: application/json"
+
+route: create-greeting-route
+# Create custom greeting
+curl -X POST "http://localhost:9393/api/greeting" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hi there!", "language": "en"}'
+
+route: update-greeting-route
+# Update greeting for a name
+curl -X PUT "http://localhost:9393/api/greeting/John" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hey there!", "language": "en"}'
+
+Testing with URL-encoded characters (for names with spaces):
+```bash
+curl -X GET "http://localhost:9393/api/greeting/John%20Doe" -H "accept: */*"
+```
+
+URLs:
+
+	http://localhost:9393/api/greeting/Jibin
+
+	http://localhost:9393/openapi
+
+	http://localhost:9393/swagger-ui
+	
+	
+	
+title: h2-in-mem-database
+module: quarkus-h2-integration
+route: get-all-users-route
+# Get All Users
+curl http://localhost:9494/users
+
+route: get-user-by-id-route
+# Get User by ID (replace 1 with actual ID)
+curl http://localhost:9494/users/1
+
+route: create-user-route
+# Create User
+curl -X POST http://localhost:9494/users \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Jibin Thomas","email":"jibin.thomas@gmail.com"}'
+	 
+route: update-user-route
+# Update User (replace 1 with actual ID)
+curl -X PUT http://localhost:9494/users/1 \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Jibin Thomas","email":"jibin.2.thomas1999@gmail.com"}'
+	 
+route: delete-user-route
+# Delete User (replace 1 with actual ID)
+curl -X DELETE http://localhost:9494/users/1

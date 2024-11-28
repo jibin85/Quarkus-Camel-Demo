@@ -1,0 +1,56 @@
+HOW TO ENABLE H2-CONSOLE IN WEB/BROWSER:
+
+Step 1: Make Sure appropriate dependencies for h2-console is added in POM.xml
+		Dependencies are,
+			1. quarkus-jdbc-h2
+			2. quarkus-undertow
+			3. jakarta.servlet-api
+		others,
+			4. quarkus-agroal
+			5. quarkus-hibernate-orm-panache
+			6. camel-quarkus-jta
+		
+Step 2: Make sure appropriate h2-console configurations are configured in application.properties
+		Configs are,
+			# To enable H2 Console Configuration
+			quarkus.h2.console.enabled=true
+			quarkus.h2.console.path=/h2-console
+			
+			# Other Database Configuration
+			quarkus.datasource.db-kind=h2
+			quarkus.datasource.jdbc.url=jdbc:h2:mem:testdb
+			quarkus.datasource.username=sa
+			quarkus.datasource.password=
+			quarkus.hibernate-orm.database.generation=drop-and-create
+			
+Step 3: Create a META-INF folder under src/main/resources and inside it create a web.xml to enable it to view in browser
+		web.xml:
+			<?xml version="1.0" encoding="UTF-8"?>
+			<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+					 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+					 version="5.0">
+				<display-name>My Web Application</display-name>
+				<servlet>
+					<servlet-name>h2-console</servlet-name>
+					<servlet-class>org.h2.server.web.JakartaWebServlet</servlet-class>
+					<init-param>
+						<param-name>webAllowOthers</param-name>
+						<param-value>true</param-value>
+					</init-param>
+					<load-on-startup>1</load-on-startup>
+				</servlet>
+				<servlet-mapping>
+					<servlet-name>h2-console</servlet-name>
+					<url-pattern>/h2-console/*</url-pattern>
+				</servlet-mapping>
+			</web-app>
+			
+Step 4: Compile the application
+Step 5: Run the application
+Step 6: Check the appropriate server for h2-console, 
+		for example as per application.properties, 
+			check under 
+			http://localhost:9494/h2-console
+			
+Step 7: Login into it with appropriate credentials based on the application.properties

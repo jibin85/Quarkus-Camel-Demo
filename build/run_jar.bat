@@ -80,6 +80,16 @@ CD /D "%CD%\quarkus-swagger-integration\target" || (
 )
 SET "quarkus-swagger-integration=%CD%"
 
+REM Change back to parent directory before next change
+CD /D "%ORIGINAL_DIR%\.."
+
+REM ADDING THE NEW MODULE: quarkus-h2-integration
+CD /D "%CD%\quarkus-h2-integration\target" || (
+    echo Error: Failed to change directory to quarkus-h2-integration/target
+    exit /b 1
+)
+SET "quarkus_h2_integration=%CD%"
+
 REM Change back to the original directory before running the JAR files
 CD /D "%ORIGINAL_DIR%" || (
     echo Error: Failed to return to original directory
@@ -122,6 +132,12 @@ if not exist "%quarkus-swagger-integration%\quarkus-app\quarkus-run.jar" (
     exit /b 1
 )
 
+REM CHECKING NEW MODULE: quarkus-h2-integration
+if not exist "%quarkus_h2_integration%\quarkus-app\quarkus-run.jar" (
+    echo Error: JAR file not found: %quarkus_h2_integration%\quarkus-app\quarkus-run.jar
+    exit /b 1
+)
+
 REM Create necessary directories if they don't exist
 mkdir "%WORK_DIR%\src\main\resources\localIdempotetnRepository" 2>nul
 echo Created/Verified idempotent repository directory
@@ -134,6 +150,7 @@ START "quarkus-rest-service-9090"    CMD /c java -jar "%quarkus_rest_service_909
 START "quarkus-email-integration"    CMD /c java -jar "%quarkus_email_integration%\quarkus-app\quarkus-run.jar"
 START "quarkus-soap-integration"     CMD /c java -jar "%quarkus-soap-integration%\quarkus-app\quarkus-run.jar"
 START "quarkus-swagger-integration"  CMD /c java -jar "%quarkus-swagger-integration%\quarkus-app\quarkus-run.jar"
+START "quarkus-h2-integration"       CMD /c java -jar "%quarkus_h2_integration%\quarkus-app\quarkus-run.jar"
 
 REM Check the error level of the last command
 if %ERRORLEVEL% neq 0 (

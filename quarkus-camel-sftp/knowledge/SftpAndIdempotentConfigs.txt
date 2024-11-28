@@ -150,6 +150,31 @@ In practice, with this configuration, the files on the SFTP server will remain c
 
 IDEMPOTENT REPOSITORY:
 
+What is an Idempotent Repository?
+An idempotent repository is one where performing the same operation multiple times produces the same result as performing it once. Let me explain this concept with a practical example:
+
+In a database or repository context, idempotency means that if you try to save the same data multiple times, it won't create duplicate records or cause unintended side effects. 
+
+For example:
+```python
+# In an idempotent repository
+repository.save(user)  # First save
+repository.save(user)  # Second save - same result as first save
+repository.save(user)  # Third save - still same result
+```
+
+This is particularly important in distributed systems where:
+1. Network issues might cause duplicate requests
+2. Retry mechanisms might trigger the same operation multiple times
+3. Multiple services might try to perform the same operation
+
+Common ways to implement idempotency in repositories include:
+- Using unique identifiers/keys
+- Implementing upsert (update or insert) operations
+- Adding version control or timestamps
+- Using conditional updates
+
+
 STEPS:
 1. Create a camel route as usual
 2. Create a seperate class or bean which handles the idempotent repository

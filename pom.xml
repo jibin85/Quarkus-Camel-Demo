@@ -17,6 +17,7 @@
         <module>quarkus-rest-service-7070</module>
         <module>quarkus-rest-service-9090</module>
         <module>quarkus-rest-service-6060</module>
+        <module>quarkus-h2-integration</module>
     </modules>
     <properties>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
